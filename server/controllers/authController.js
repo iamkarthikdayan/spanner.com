@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   const { name, email, password, phone_number, address, role } = req.body;
   const password_hash = await bcrypt.hash(password, 10);
   const user = new User({ name, email, password_hash, phone_number, address, role });
@@ -10,7 +10,7 @@ exports.register = async (req, res) => {
   res.status(201).json({ message: 'Registered successfully' });
 };
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user || !(await bcrypt.compare(password, user.password_hash))) {
@@ -18,4 +18,9 @@ exports.login = async (req, res) => {
   }
   const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET);
   res.json({ token });
+};
+
+module.exports = {
+  register,
+  login,
 };
