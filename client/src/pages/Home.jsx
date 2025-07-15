@@ -62,6 +62,12 @@ function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ Function to check if user logged in
+  const isUserLoggedIn = () => {
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    return !!loggedInUser; // true if logged in
+  };
+
   return (
     <main className="home-main">
       <section className="hero-section">
@@ -110,13 +116,23 @@ function Home() {
                 </div>
                 <h2 className="repair-card-title">{card.title}</h2>
                 <p className="repair-card-desc">{card.desc}</p>
+
+                {/* ✅ Know More Button with Login Check */}
                 <button
                   className="know-more-btn"
                   onClick={() => {
-                    if (card.title === 'Air-Conditioner Repair') {
-                      navigate('/ac-repair');
-                    } else if (card.title === 'Washing Machine Repair') {
-                      navigate('/wm-repair');
+                    if (!isUserLoggedIn()) {
+                      if (window.confirm("You need to create an account or log in to access this service. Go to Register now?")) {
+                        navigate("/login");
+                      }
+                      return;
+                    }
+
+                    // ✅ If logged in, navigate normally
+                    if (card.title === "Air-Conditioner Repair") {
+                      navigate("/ac-repair");
+                    } else if (card.title === "Washing Machine Repair") {
+                      navigate("/wm-repair");
                     } else {
                       alert(`More information about ${card.title} coming soon!`);
                     }

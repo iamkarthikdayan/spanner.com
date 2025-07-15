@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import "./Login.css";
 import Logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,11 +14,31 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!form.role) {
       alert("Please select your role.");
       return;
     }
-    alert("Login submitted!");
+
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    const matchedUser = storedUsers.find(
+      (user) =>
+        user.email === form.email &&
+        user.password === form.password &&
+        user.role === form.role
+    );
+
+    if (matchedUser) {
+      // Save session data
+      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
+
+      alert(`Login successful as ${form.role}!`);
+      // Redirect to homepage (or dashboard)
+      navigate("/");
+    } else {
+      alert("Invalid credentials. Please check your email, password, and role.");
+    }
   };
 
   return (
@@ -30,7 +51,9 @@ function Login() {
             className="login-logo-img"
           />
         </div>
+
         <h2 className="login-title">Sign in to your account</h2>
+
         <div className="login-field">
           <label htmlFor="role">Sign in as</label>
           <select
@@ -46,6 +69,7 @@ function Login() {
             <option value="provider">Provider</option>
           </select>
         </div>
+
         <div className="login-field">
           <label htmlFor="email">Email</label>
           <input
@@ -59,6 +83,7 @@ function Login() {
             placeholder="you@email.com"
           />
         </div>
+
         <div className="login-field">
           <label htmlFor="password">Password</label>
           <div className="login-password-wrap">
@@ -83,11 +108,13 @@ function Login() {
             </button>
           </div>
         </div>
+
         <div className="login-actions">
           <button type="submit" className="login-btn">
             Sign In
           </button>
         </div>
+
         <div className="login-links">
           <Link to="#">Forgot password?</Link>
           <span>·</span>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css";
-import Logo from "../assets/logo.png"; // Use your logo path
+import Logo from "../assets/logo.png";
 
 function Register() {
   const [form, setForm] = useState({
@@ -14,6 +14,7 @@ function Register() {
     location: "",
     license: null,
     documents: null,
+    specialization: [],
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +25,16 @@ function Register() {
       ...prev,
       [name]: type === "file" ? files[0] : value,
     }));
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    setForm((prev) => {
+      const updated = checked
+        ? [...prev.specialization, value]
+        : prev.specialization.filter((item) => item !== value);
+      return { ...prev, specialization: updated };
+    });
   };
 
   const handleSubmit = (e) => {
@@ -37,9 +48,26 @@ function Register() {
       return;
     }
 
-    // If sending to backend later, convert to FormData here
-    alert(`Signup submitted as ${form.role}!`);
-    console.log("Submitted Form:", form);
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    const emailAlreadyExists = existingUsers.some(
+      (user) => user.email === form.email
+    );
+    if (emailAlreadyExists) {
+      alert("This email is already registered.");
+      return;
+    }
+
+    const userDataToStore = { ...form };
+    delete userDataToStore.confirm; // Don't store confirm password
+
+    localStorage.setItem(
+      "users",
+      JSON.stringify([...existingUsers, userDataToStore])
+    );
+
+    alert(`Signup successful as ${form.role}!`);
+    console.log("Stored user:", userDataToStore);
   };
 
   return (
@@ -110,11 +138,6 @@ function Register() {
                 placeholder="Your phone number"
               />
             </div>
-          </>
-        )}
-
-        {form.role === "provider" && (
-          <>
             <div className="login-field">
               <label htmlFor="location">Location</label>
               <input
@@ -127,6 +150,28 @@ function Register() {
                 placeholder="City or area"
               />
             </div>
+          </>
+        )}
+
+        {form.role === "provider" && (
+          <>
+            <div className="login-field">
+              <label>Specialization</label>
+              <div className="checkbox-group">
+                {["Air Conditioner", "Refrigerator", "Washing Machine", "Fan", "Others"].map((item) => (
+                  <label key={item} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value={item}
+                      checked={form.specialization.includes(item)}
+                      onChange={handleCheckboxChange}
+                    />
+                    {item}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="login-field">
               <label htmlFor="license">License (Upload)</label>
               <input
@@ -185,11 +230,7 @@ function Register() {
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              <i
-                className={`fa-solid fa-eye${
-                  showPassword ? "-slash" : ""
-                }`}
-              ></i>
+              <i className={`fa-solid fa-eye${showPassword ? "-slash" : ""}`} />
             </button>
           </div>
         </div>
