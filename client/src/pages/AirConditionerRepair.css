@@ -156,10 +156,24 @@
 }
 
 .review-list {
-    display: grid;
-    max-width: 900px;
-    margin: auto;
-    gap: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 600px) {
+  .review-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .review-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .review-card {

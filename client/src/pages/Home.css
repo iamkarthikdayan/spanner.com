@@ -167,6 +167,70 @@
   margin: 0;
 }
 
+/* Blur effect */
+.blurred {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+/* Modal content */
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.2rem;
+  max-width: 450px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+/* Sign Up button in hero */
+.open-register-btn {
+  margin-top: 1rem;
+  background: #FFCE00;
+  color: #000;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.open-register-btn:hover {
+  background: #ffdb4d;
+  transform: translateY(-2px);
+}
+
+
 /* Remove old .repair-card-img-wrap and .repair-card-icon if not used anymore */
 
 @media (min-width: 600px) {
