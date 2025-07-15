@@ -26,6 +26,20 @@
   margin-left: auto;
   margin-right: auto;
 }
+.login-select {
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #dbe2ea;
+  font-size: 1rem;
+  background: #f7f8fa;
+  transition: border 0.2s;
+}
+
+.login-select:focus {
+  border: 1.5px solid #003cff;
+  outline: none;
+  background: #fff;
+}
 
 .brand-blue {
   color: #003cff;

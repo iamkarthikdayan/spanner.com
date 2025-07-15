@@ -1,0 +1,170 @@
+/* WashingMachineRepair.css */
+
+.wm-repair-page {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.wm-hero-section {
+  background: url('https://joboy.in/assets/images/ac-repair-banner.jpg') center/cover no-repeat;
+  color: white;
+  text-align: center;
+  padding: 5rem 1rem;
+  position: relative;
+}
+
+.wm-hero-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.wm-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: auto;
+}
+
+.wm-hero-content h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.wm-hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.wm-cta-btn {
+  background-color: #007BFF;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.wm-cta-btn:hover {
+  background-color: #0056b3;
+}
+
+.wm-service-info {
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 1rem;
+  max-width: 1100px;
+  margin: auto;
+  gap: 2rem;
+}
+
+.wm-service-img img {
+  max-width: 100%;
+  border-radius: 1rem;
+}
+
+.wm-service-details h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #003cff;
+}
+
+.wm-service-details ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.wm-service-details li {
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.wm-faq-section {
+  background-color: #f9f9f9;
+  padding: 3rem 1rem;
+}
+
+.wm-faq-section h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #003cff;
+}
+
+.faq-list {
+  max-width: 900px;
+  margin: auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.faq-item h3 {
+  font-size: 1.2rem;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+.faq-item p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.wm-reviews-section {
+  padding: 3rem 1rem;
+  background: #fff;
+}
+
+.wm-reviews-section h2 {
+  text-align: center;
+  color: #003cff;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.review-list {
+  display: grid;
+  max-width: 900px;
+  margin: auto;
+  gap: 1.5rem;
+}
+
+.review-card {
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+.review-text {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.review-stars {
+  font-size: 1.2rem;
+  color: #f5c518;
+  margin-bottom: 0.5rem;
+}
+
+.review-author {
+  font-weight: bold;
+  color: #333;
+}
+
+@media (min-width: 768px) {
+  .wm-service-info {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .wm-service-img,
+  .wm-service-details {
+    flex: 1;
+  }
+}

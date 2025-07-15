@@ -5,7 +5,9 @@ import Footer from './components/Footer.jsx'
 import Home from './pages/Home.jsx';
 import Login from "./pages/Login";
 import Register from "./pages/Register.jsx";
-
+import AirConditionerRepair from './pages/AirConditionerRepair';
+import WashingMachineRepair from './pages/WashingMachineRepair.jsx';
+import ACMechanics from './pages/ACMechanics.jsx';
 // Helper to conditionally render Navbar
 function Layout({ children }) {
   const location = useLocation();
@@ -27,6 +29,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* Add other routes here */}
+        <Route path="/ac-repair" element={<AirConditionerRepair />} />
+        <Route path="/wm-repair" element={<WashingMachineRepair />} />
+        <Route path="/ac-mechanics" element={<ACMechanics />} />
+
       </Routes>
     </Layout>
   );

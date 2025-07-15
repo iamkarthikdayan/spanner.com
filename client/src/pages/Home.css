@@ -55,6 +55,38 @@
   position: relative;
   z-index: 3;
 }
+.services-heading {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #003cff;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.service-search-input {
+  padding: 0.7rem 1rem;
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid #003cff;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.no-results {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+
 
 .cards-section {
   margin-top: 3rem;
@@ -70,13 +102,29 @@
 }
 
 .repair-card {
-  background: #fff;
+  background: #cac8c8;
   border-radius: 1rem;
   box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   text-align: center;
   transition: box-shadow 0.2s, transform 0.2s;
   border: 1px solid #e6e8ec;
+}
+.repair-card .know-more-btn {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+  background-color: #007BFF; /* Blue background */
+  color: #fff;               /* White font */
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.repair-card:hover .know-more-btn {
+  opacity: 1;
+  visibility: visible;
 }
 
 .repair-card:hover {
@@ -99,8 +147,8 @@
 }
 
 .repair-card-img {
-  width: 56px;
-  height: 56px;
+  width: 100px;
+  height: 90px;
   object-fit: contain;
   display: block;
   margin-bottom: 0;

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import "./Login.css";
 import Logo from "../assets/logo.png";
-import { Link } from "react-router-dom"; // Adjust the path as necessary
+import { Link } from "react-router-dom";
 
 function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
@@ -13,6 +13,10 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!form.role) {
+      alert("Please select your role.");
+      return;
+    }
     alert("Login submitted!");
   };
 
@@ -20,13 +24,28 @@ function Login() {
     <div className="login-page">
       <form className="login-form" onSubmit={handleSubmit} autoComplete="off">
         <div className="login-logo">
-            <img
-                src={Logo}
-                alt="iFixit Logo"
-                className="login-logo-img"
-            />
+          <img
+            src={Logo}
+            alt="iFixit Logo"
+            className="login-logo-img"
+          />
         </div>
         <h2 className="login-title">Sign in to your account</h2>
+        <div className="login-field">
+          <label htmlFor="role">Sign in as</label>
+          <select
+            id="role"
+            name="role"
+            required
+            value={form.role}
+            onChange={handleChange}
+            className="login-select"
+          >
+            <option value="">Select...</option>
+            <option value="user">User</option>
+            <option value="provider">Provider</option>
+          </select>
+        </div>
         <div className="login-field">
           <label htmlFor="email">Email</label>
           <input
