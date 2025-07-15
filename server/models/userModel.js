@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    service_type:{
+        type: String,
+        required: true
+    },
     phone_number: {
         type: Number,
         required: true
@@ -27,13 +31,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['User', 'Admin'],
         default: 'User'
-    },
-
-        timestamps:
-        {
-            createdAt: 'created_at',
-            updatedAt: 'updated_at'
-        }
-    });
+    }
+}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 module.exports = mongoose.model('User', userSchema);

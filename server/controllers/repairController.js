@@ -15,8 +15,6 @@ const createRequest = async (req, res) => {
     provider_id,
     preferred_date,
     status: 'Pending',
-    createdAt: timestamp || new Date(),
-    updatedAt: new Date()
   });
 
   try {
