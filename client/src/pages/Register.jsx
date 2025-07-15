@@ -8,11 +8,22 @@ function Register() {
     email: "",
     password: "",
     confirm: "",
+    role: "",
+    address: "",
+    phoneno: "",
+    location: "",
+    license: null,
+    documents: null,
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, files } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "file" ? files[0] : value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -21,8 +32,14 @@ function Register() {
       alert("Passwords do not match!");
       return;
     }
-    // Handle signup logic here
-    alert("Signup submitted!");
+    if (!form.role) {
+      alert("Please select your role.");
+      return;
+    }
+
+    // If sending to backend later, convert to FormData here
+    alert(`Signup submitted as ${form.role}!`);
+    console.log("Submitted Form:", form);
   };
 
   return (
@@ -37,6 +54,23 @@ function Register() {
           />
         </div>
         <h2 className="login-title">Create your account</h2>
+
+        <div className="login-field">
+          <label htmlFor="role">Register as</label>
+          <select
+            id="role"
+            name="role"
+            required
+            value={form.role}
+            onChange={handleChange}
+            className="login-select"
+          >
+            <option value="">Select...</option>
+            <option value="user">User</option>
+            <option value="provider">Provider</option>
+          </select>
+        </div>
+
         <div className="login-field">
           <label htmlFor="name">Name</label>
           <input
@@ -49,6 +83,74 @@ function Register() {
             placeholder="Your name"
           />
         </div>
+
+        {(form.role === "user" || form.role === "provider") && (
+          <>
+            <div className="login-field">
+              <label htmlFor="address">Address</label>
+              <input
+                id="address"
+                name="address"
+                type="text"
+                required
+                value={form.address}
+                onChange={handleChange}
+                placeholder="Your address"
+              />
+            </div>
+            <div className="login-field">
+              <label htmlFor="phoneno">Phone Number</label>
+              <input
+                id="phoneno"
+                name="phoneno"
+                type="tel"
+                required
+                value={form.phoneno}
+                onChange={handleChange}
+                placeholder="Your phone number"
+              />
+            </div>
+          </>
+        )}
+
+        {form.role === "provider" && (
+          <>
+            <div className="login-field">
+              <label htmlFor="location">Location</label>
+              <input
+                id="location"
+                name="location"
+                type="text"
+                required
+                value={form.location}
+                onChange={handleChange}
+                placeholder="City or area"
+              />
+            </div>
+            <div className="login-field">
+              <label htmlFor="license">License (Upload)</label>
+              <input
+                id="license"
+                name="license"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="login-field">
+              <label htmlFor="documents">Other Documents (Upload)</label>
+              <input
+                id="documents"
+                name="documents"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
         <div className="login-field">
           <label htmlFor="email">Email</label>
           <input
@@ -62,6 +164,7 @@ function Register() {
             placeholder="you@email.com"
           />
         </div>
+
         <div className="login-field">
           <label htmlFor="password">Password</label>
           <div className="login-password-wrap">
@@ -82,10 +185,15 @@ function Register() {
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              <i className={`fa-solid fa-eye${showPassword ? "-slash" : ""}`}></i>
+              <i
+                className={`fa-solid fa-eye${
+                  showPassword ? "-slash" : ""
+                }`}
+              ></i>
             </button>
           </div>
         </div>
+
         <div className="login-field">
           <label htmlFor="confirm">Confirm Password</label>
           <input
@@ -99,11 +207,13 @@ function Register() {
             placeholder="Repeat your password"
           />
         </div>
+
         <div className="login-actions">
           <button type="submit" className="login-btn">
             Sign Up
           </button>
         </div>
+
         <div className="login-links">
           <a href="/login">Already have an account?</a>
         </div>
