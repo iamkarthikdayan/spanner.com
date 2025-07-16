@@ -4,28 +4,13 @@ import "./ProviderHome.css";
 function ProviderHome() {
   const [requests, setRequests] = useState([]);
   const [acceptedRequests, setAcceptedRequests] = useState([]);
-  const [loggedInProvider, setLoggedInProvider] = useState(null);
 
-  // Load logged-in provider & filter requests
+  // ✅ Load requests safely
   useEffect(() => {
-    const provider = JSON.parse(localStorage.getItem("loggedInUser"));
-    setLoggedInProvider(provider);
-
-    const storedRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
+    const storedRequests = JSON.parse(localStorage.getItem("pendingRequests")) || [];
     const storedAccepted = JSON.parse(localStorage.getItem("acceptedRequests")) || [];
-
-    if (provider?.role === "provider") {
-      // ✅ Show only requests for THIS provider
-      const filteredRequests = storedRequests.filter(
-        (r) => r.providerName === provider.name
-      );
-      const filteredAccepted = storedAccepted.filter(
-        (r) => r.providerName === provider.name
-      );
-
-      setRequests(filteredRequests);
-      setAcceptedRequests(filteredAccepted);
-    }
+    setRequests(storedRequests);
+    setAcceptedRequests(storedAccepted);
   }, []);
 
   const handleAccept = (req) => {
@@ -35,45 +20,26 @@ function ProviderHome() {
     setRequests(updatedRequests);
     setAcceptedRequests(updatedAccepted);
 
-    // Update localStorage
-    const allRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
-    const remainingAll = allRequests.filter((r) => r.id !== req.id);
-    localStorage.setItem("repairRequests", JSON.stringify(remainingAll));
+    localStorage.setItem("pendingRequests", JSON.stringify(updatedRequests));
+    localStorage.setItem("acceptedRequests", JSON.stringify(updatedAccepted));
 
-    const allAccepted = JSON.parse(localStorage.getItem("acceptedRequests")) || [];
-    localStorage.setItem("acceptedRequests", JSON.stringify([...allAccepted, req]));
-
-    alert(`✅ Accepted request from ${req.userName}`);
+    alert(`✅ Accepted request from ${req.user?.name || "Unknown User"}`);
   };
 
   const handleReject = (req) => {
     const updatedRequests = requests.filter((r) => r.id !== req.id);
     setRequests(updatedRequests);
-
-    // Remove from global storage
-    const allRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
-    const remainingAll = allRequests.filter((r) => r.id !== req.id);
-    localStorage.setItem("repairRequests", JSON.stringify(remainingAll));
-
-    alert(`❌ Rejected request from ${req.userName}`);
+    localStorage.setItem("pendingRequests", JSON.stringify(updatedRequests));
+    alert(`❌ Rejected request from ${req.user?.name || "Unknown User"}`);
   };
-
-  if (!loggedInProvider || loggedInProvider.role !== "provider") {
-    return (
-      <div className="provider-home">
-        <h2>⚠ Access Denied</h2>
-        <p>Only providers can view this page.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="provider-home">
       {/* HEADER SECTION */}
       <header className="provider-header">
-        <h1 className="provider-title">🔧 Welcome, {loggedInProvider.name}!</h1>
+        <h1 className="provider-title">🔧 Welcome, Mechanic!</h1>
         <p className="provider-subtitle">
-          Here are your latest service requests
+          Here are the latest service requests from users in your area
         </p>
       </header>
 
@@ -82,23 +48,30 @@ function ProviderHome() {
         <h2 className="section-title">📩 Pending Requests</h2>
         {requests.length > 0 ? (
           <div className="request-grid">
-            {requests.map((req) => (
-              <div className="request-card" key={req.id}>
-                <div className="request-content">
-                  <h3>{req.service}</h3>
-                  <p><strong>User:</strong> {req.userName}</p>
-                  <p><strong>Location:</strong> {req.location}</p>
-                  <p><strong>Details:</strong> {req.details}</p>
+            {[...requests] // ✅ Make a copy
+              .sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)) // ✅ Sort latest first
+              .map((req, index) => (
+                <div className="request-card" key={index}>
+                  <div className="request-content">
+                    <h3>{req.mechanic?.name || "Unknown Mechanic"}</h3>
+                    <p><strong>User:</strong> {req.user?.name || "Unknown User"}</p>
+                    <p><strong>Location:</strong> {req.user?.location || "Not provided"}</p>
+                    <p><strong>Contact:</strong> {req.user?.phoneno || "N/A"}</p>
+                    <p>
+                      <strong>Requested At:</strong>{" "}
+                      {req.requestedAt ? new Date(req.requestedAt).toLocaleString() : "N/A"}
+                    </p>
+                  </div>
+
+                  <div className="request-buttons">
+                    <button className="accept-btn" onClick={() => handleAccept(req)}>✅ Accept</button>
+                    <button className="reject-btn" onClick={() => handleReject(req)}>❌ Reject</button>
+                  </div>
                 </div>
-                <div className="request-buttons">
-                  <button className="accept-btn" onClick={() => handleAccept(req)}>✅ Accept</button>
-                  <button className="reject-btn" onClick={() => handleReject(req)}>❌ Reject</button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         ) : (
-          <p className="empty-text">🎉 No new requests for you right now</p>
+          <p className="empty-text">🎉 No new requests right now</p>
         )}
       </section>
 
@@ -107,13 +80,17 @@ function ProviderHome() {
         <h2 className="section-title">✅ Accepted Requests</h2>
         {acceptedRequests.length > 0 ? (
           <div className="request-grid">
-            {acceptedRequests.map((req) => (
-              <div className="request-card accepted" key={req.id}>
+            {acceptedRequests.map((req, index) => (
+              <div className="request-card accepted" key={index}>
                 <div className="request-content">
-                  <h3>{req.service}</h3>
-                  <p><strong>User:</strong> {req.userName}</p>
-                  <p><strong>Location:</strong> {req.location}</p>
-                  <p><strong>Details:</strong> {req.details}</p>
+                  <h3>{req.mechanic?.name || "Unknown Mechanic"}</h3>
+                  <p><strong>User:</strong> {req.user?.name || "Unknown User"}</p>
+                  <p><strong>Location:</strong> {req.user?.location || "Not provided"}</p>
+                  <p><strong>Contact:</strong> {req.user?.phoneno || "N/A"}</p>
+                  <p>
+                    <strong>Requested At:</strong>{" "}
+                    {req.requestedAt ? new Date(req.requestedAt).toLocaleString() : "N/A"}
+                  </p>
                 </div>
               </div>
             ))}

@@ -177,3 +177,14 @@ body {
 .wait-popup button:hover {
   background: #005fd1;
 }
+.request-card p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.request-card.accepted {
+  border-left: 5px solid #28a745;
+  background: #f1fff4;
+}
+
