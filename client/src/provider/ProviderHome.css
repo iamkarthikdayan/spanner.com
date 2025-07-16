@@ -1,0 +1,118 @@
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: #f7f8fa;
+  margin: 0;
+  padding: 0;
+}
+
+.provider-home {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.provider-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.provider-title {
+  font-size: 2.2rem;
+  color: #222;
+  font-weight: 700;
+}
+
+.provider-subtitle {
+  color: #666;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.provider-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 1rem;
+  border-left: 4px solid #0083e2;
+  padding-left: 10px;
+}
+
+.request-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.request-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.request-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.request-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #0083e2;
+}
+
+.request-content p {
+  margin: 0.4rem 0;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.request-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.accept-btn,
+.reject-btn {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.accept-btn {
+  background: #28a745;
+  color: #fff;
+}
+
+.accept-btn:hover {
+  background: #218838;
+}
+
+.reject-btn {
+  background: #dc3545;
+  color: #fff;
+}
+
+.reject-btn:hover {
+  background: #c82333;
+}
+
+.request-card.accepted {
+  border-left: 5px solid #28a745;
+}
+
+.empty-text {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 1rem;
+}

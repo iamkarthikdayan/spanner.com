@@ -39,35 +39,37 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (form.password !== form.confirm) {
       alert("Passwords do not match!");
       return;
     }
+
     if (!form.role) {
       alert("Please select your role.");
       return;
     }
 
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    // ✅ Separate storage for users and providers
+    const storageKey = form.role === "provider" ? "providers" : "users";
+    const existingAccounts = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-    const emailAlreadyExists = existingUsers.some(
-      (user) => user.email === form.email
-    );
-    if (emailAlreadyExists) {
+    const emailExists = existingAccounts.some((acc) => acc.email === form.email);
+    if (emailExists) {
       alert("This email is already registered.");
       return;
     }
 
-    const userDataToStore = { ...form };
-    delete userDataToStore.confirm; // Don't store confirm password
+    const newAccount = { ...form };
+    delete newAccount.confirm; // do not store confirm password
 
     localStorage.setItem(
-      "users",
-      JSON.stringify([...existingUsers, userDataToStore])
+      storageKey,
+      JSON.stringify([...existingAccounts, newAccount])
     );
 
     alert(`Signup successful as ${form.role}!`);
-    console.log("Stored user:", userDataToStore);
+    console.log("Stored to:", storageKey, newAccount);
   };
 
   return (
