@@ -4,14 +4,28 @@ import "./ProviderHome.css";
 function ProviderHome() {
   const [requests, setRequests] = useState([]);
   const [acceptedRequests, setAcceptedRequests] = useState([]);
+  const [loggedInProvider, setLoggedInProvider] = useState(null);
 
-  // Load requests from localStorage (temporary storage)
+  // Load logged-in provider & filter requests
   useEffect(() => {
-    const storedRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
-    setRequests(storedRequests);
+    const provider = JSON.parse(localStorage.getItem("loggedInUser"));
+    setLoggedInProvider(provider);
 
+    const storedRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
     const storedAccepted = JSON.parse(localStorage.getItem("acceptedRequests")) || [];
-    setAcceptedRequests(storedAccepted);
+
+    if (provider?.role === "provider") {
+      // ✅ Show only requests for THIS provider
+      const filteredRequests = storedRequests.filter(
+        (r) => r.providerName === provider.name
+      );
+      const filteredAccepted = storedAccepted.filter(
+        (r) => r.providerName === provider.name
+      );
+
+      setRequests(filteredRequests);
+      setAcceptedRequests(filteredAccepted);
+    }
   }, []);
 
   const handleAccept = (req) => {
@@ -21,26 +35,45 @@ function ProviderHome() {
     setRequests(updatedRequests);
     setAcceptedRequests(updatedAccepted);
 
-    localStorage.setItem("repairRequests", JSON.stringify(updatedRequests));
-    localStorage.setItem("acceptedRequests", JSON.stringify(updatedAccepted));
+    // Update localStorage
+    const allRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
+    const remainingAll = allRequests.filter((r) => r.id !== req.id);
+    localStorage.setItem("repairRequests", JSON.stringify(remainingAll));
 
-    alert(`✅ Accepted request for ${req.service}`);
+    const allAccepted = JSON.parse(localStorage.getItem("acceptedRequests")) || [];
+    localStorage.setItem("acceptedRequests", JSON.stringify([...allAccepted, req]));
+
+    alert(`✅ Accepted request from ${req.userName}`);
   };
 
   const handleReject = (req) => {
     const updatedRequests = requests.filter((r) => r.id !== req.id);
     setRequests(updatedRequests);
-    localStorage.setItem("repairRequests", JSON.stringify(updatedRequests));
-    alert(`❌ Rejected request for ${req.service}`);
+
+    // Remove from global storage
+    const allRequests = JSON.parse(localStorage.getItem("repairRequests")) || [];
+    const remainingAll = allRequests.filter((r) => r.id !== req.id);
+    localStorage.setItem("repairRequests", JSON.stringify(remainingAll));
+
+    alert(`❌ Rejected request from ${req.userName}`);
   };
+
+  if (!loggedInProvider || loggedInProvider.role !== "provider") {
+    return (
+      <div className="provider-home">
+        <h2>⚠ Access Denied</h2>
+        <p>Only providers can view this page.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="provider-home">
       {/* HEADER SECTION */}
       <header className="provider-header">
-        <h1 className="provider-title">🔧 Welcome, Mechanic!</h1>
+        <h1 className="provider-title">🔧 Welcome, {loggedInProvider.name}!</h1>
         <p className="provider-subtitle">
-          Here are the latest service requests from users in your area
+          Here are your latest service requests
         </p>
       </header>
 
@@ -65,7 +98,7 @@ function ProviderHome() {
             ))}
           </div>
         ) : (
-          <p className="empty-text">🎉 No new requests right now</p>
+          <p className="empty-text">🎉 No new requests for you right now</p>
         )}
       </section>
 

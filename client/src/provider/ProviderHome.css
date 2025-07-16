@@ -108,6 +108,7 @@ body {
 
 .request-card.accepted {
   border-left: 5px solid #28a745;
+  background: #f4fff8;
 }
 
 .empty-text {
@@ -115,4 +116,64 @@ body {
   color: #777;
   font-style: italic;
   margin-top: 1rem;
+}
+
+/* ✅ POPUP OVERLAY */
+.wait-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* ✅ POPUP BOX */
+.wait-popup {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.wait-popup h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.wait-popup p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.wait-timer {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #0083e2;
+  margin-bottom: 1rem;
+}
+
+.wait-popup button {
+  background: #0083e2;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.wait-popup button:hover {
+  background: #005fd1;
 }

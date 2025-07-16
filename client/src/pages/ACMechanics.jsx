@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./AirConditionerRepair.css";
 
 function ACMechanics() {
   const [mechanics, setMechanics] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [timer, setTimer] = useState(120); // 2 minutes = 120 seconds
-  const [popupMessage, setPopupMessage] = useState("");
-  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(120); // 2 minutes
+  const [selectedMechanic, setSelectedMechanic] = useState(null);
 
   useEffect(() => {
-    // Simulate fetching from backend
+    // ✅ Fetch mechanics (static + providers from localStorage)
+    const savedProviders = JSON.parse(localStorage.getItem("providers")) || [];
+    const formattedProviders = savedProviders.map((p) => ({
+      name: p.name,
+      location: p.location,
+      rating: 4.5, // Default rating for new providers
+      experience: "New Provider",
+      contact: p.phoneno,
+    }));
+
+    // ✅ Combine static + dynamic
     setTimeout(() => {
       setMechanics([
         {
@@ -27,77 +35,51 @@ function ACMechanics() {
           experience: "5 years",
           contact: "9847032211",
         },
-        {
-          name: "Rehman Ali",
-          location: "Kakkanad",
-          rating: 4.9,
-          experience: "10 years",
-          contact: "9955533344",
-        },
-        {
-          name: "Vineeth V.",
-          location: "Kaloor",
-          rating: 4.7,
-          experience: "6 years",
-          contact: "8899322233",
-        },
+        ...formattedProviders,
       ]);
-    }, 1000);
+    }, 500);
   }, []);
 
+  // ✅ Handle sending request
   const handleSendRequest = (mechanic) => {
+    setSelectedMechanic(mechanic);
+    setShowPopup(true);
+    setCountdown(120);
+
+    // ✅ Get current logged-in user
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
     if (!loggedInUser) {
-      alert("You must log in as a user to send a request!");
-      navigate("/login");
+      alert("Please login before sending a request!");
       return;
     }
 
-    if (loggedInUser.role !== "user") {
-      alert("Providers cannot request services!");
-      navigate("/provider-home");
-      return;
-    }
-
-    // ✅ Save request details in localStorage
+    // ✅ Save request to localStorage for provider
     const pendingRequests = JSON.parse(localStorage.getItem("pendingRequests")) || [];
     const newRequest = {
-      mechanicName: mechanic.name,
-      mechanicLocation: mechanic.location,
-      requestedBy: loggedInUser.name,
-      userEmail: loggedInUser.email,
-      userLocation: loggedInUser.location,
-      userPhone: loggedInUser.phoneno,
-      time: new Date().toISOString()
+      user: loggedInUser,
+      mechanic: mechanic,
+      requestedAt: new Date().toISOString(),
     };
+
     localStorage.setItem("pendingRequests", JSON.stringify([...pendingRequests, newRequest]));
 
-    // ✅ Show popup and start timer
-    setPopupMessage(
-      `Request sent to ${mechanic.name}. Please wait 2 minutes.\nWait until the provider responds.`
-    );
-    setShowPopup(true);
-    setTimer(120); // reset timer
+    // ✅ Start countdown
+    let timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setShowPopup(false);
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
-  // Countdown logic
-  useEffect(() => {
-    let interval;
-    if (showPopup && timer > 0) {
-      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-    } else if (timer === 0 && showPopup) {
-      setPopupMessage("Time’s up! The provider will contact you soon.");
-      clearInterval(interval);
-      setTimeout(() => setShowPopup(false), 3000);
-    }
-    return () => clearInterval(interval);
-  }, [showPopup, timer]);
-
-  const formatTime = (sec) => {
-    const minutes = Math.floor(sec / 60);
-    const seconds = sec % 60;
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  // ✅ Format countdown as mm:ss
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
   };
 
   return (
@@ -108,21 +90,16 @@ function ACMechanics() {
           {mechanics.length > 0 ? (
             mechanics.map((mech, index) => (
               <div key={index} className="review-card mechanic-card">
-                <h3 style={{ marginBottom: "0.5rem", color: "#003cff" }}>
-                  {mech.name}
-                </h3>
+                <h3 style={{ marginBottom: "0.5rem", color: "#003cff" }}>{mech.name}</h3>
                 <p><strong>Location:</strong> {mech.location}</p>
                 <p><strong>Experience:</strong> {mech.experience}</p>
                 <p>
                   <strong>Rating:</strong>{" "}
-                  {"★".repeat(Math.floor(mech.rating))}
+                  {"★".repeat(Math.floor(mech.rating))}{" "}
                   {"☆".repeat(5 - Math.floor(mech.rating))} ({mech.rating})
                 </p>
                 <p><strong>Contact:</strong> {mech.contact}</p>
-                <button
-                  className="send-request-btn"
-                  onClick={() => handleSendRequest(mech)}
-                >
+                <button className="send-request-btn" onClick={() => handleSendRequest(mech)}>
                   Send Request
                 </button>
               </div>
@@ -133,19 +110,14 @@ function ACMechanics() {
         </div>
       </section>
 
-      {/* ✅ POPUP MODAL */}
+      {/* ✅ POPUP WHEN REQUEST SENT */}
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
-            <h3>{popupMessage}</h3>
-            {timer > 0 && (
-              <p>⏳ Waiting time: <strong>{formatTime(timer)}</strong></p>
-            )}
-            {timer > 0 && (
-              <button className="close-btn" onClick={() => setShowPopup(false)}>
-                Cancel
-              </button>
-            )}
+            <h3>Request Sent!</h3>
+            <p>Waiting for <strong>{selectedMechanic?.name}</strong> to respond...</p>
+            <p className="countdown">⏳ {formatTime(countdown)} remaining</p>
+            <p className="wait-text">Please wait until the provider responds.</p>
           </div>
         </div>
       )}

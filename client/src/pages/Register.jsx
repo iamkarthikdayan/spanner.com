@@ -44,32 +44,45 @@ function Register() {
       alert("Passwords do not match!");
       return;
     }
-
     if (!form.role) {
       alert("Please select your role.");
       return;
     }
 
-    // ✅ Separate storage for users and providers
-    const storageKey = form.role === "provider" ? "providers" : "users";
-    const existingAccounts = JSON.parse(localStorage.getItem(storageKey)) || [];
+    // ✅ Separate users & providers storage
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const existingProviders = JSON.parse(localStorage.getItem("providers")) || [];
 
-    const emailExists = existingAccounts.some((acc) => acc.email === form.email);
-    if (emailExists) {
+    // ✅ Check duplicate email in both users & providers
+    const emailAlreadyExists =
+      existingUsers.some((u) => u.email === form.email) ||
+      existingProviders.some((p) => p.email === form.email);
+
+    if (emailAlreadyExists) {
       alert("This email is already registered.");
       return;
     }
 
-    const newAccount = { ...form };
-    delete newAccount.confirm; // do not store confirm password
+    const userDataToStore = { ...form };
+    delete userDataToStore.confirm; // Don't store confirm password
 
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify([...existingAccounts, newAccount])
-    );
+    if (form.role === "provider") {
+      // ✅ Save provider separately
+      localStorage.setItem(
+        "providers",
+        JSON.stringify([...existingProviders, userDataToStore])
+      );
+      alert("Provider account created successfully!");
+    } else {
+      // ✅ Save user separately
+      localStorage.setItem(
+        "users",
+        JSON.stringify([...existingUsers, userDataToStore])
+      );
+      alert("User account created successfully!");
+    }
 
-    alert(`Signup successful as ${form.role}!`);
-    console.log("Stored to:", storageKey, newAccount);
+    console.log("Stored user/provider:", userDataToStore);
   };
 
   return (
@@ -85,6 +98,7 @@ function Register() {
         </div>
         <h2 className="login-title">Create your account</h2>
 
+        {/* ROLE SELECTION */}
         <div className="login-field">
           <label htmlFor="role">Register as</label>
           <select
@@ -101,6 +115,7 @@ function Register() {
           </select>
         </div>
 
+        {/* BASIC DETAILS */}
         <div className="login-field">
           <label htmlFor="name">Name</label>
           <input
@@ -155,6 +170,7 @@ function Register() {
           </>
         )}
 
+        {/* PROVIDER-SPECIFIC FIELDS */}
         {form.role === "provider" && (
           <>
             <div className="login-field">
@@ -198,6 +214,7 @@ function Register() {
           </>
         )}
 
+        {/* EMAIL */}
         <div className="login-field">
           <label htmlFor="email">Email</label>
           <input
@@ -212,6 +229,7 @@ function Register() {
           />
         </div>
 
+        {/* PASSWORD */}
         <div className="login-field">
           <label htmlFor="password">Password</label>
           <div className="login-password-wrap">
@@ -237,6 +255,7 @@ function Register() {
           </div>
         </div>
 
+        {/* CONFIRM PASSWORD */}
         <div className="login-field">
           <label htmlFor="confirm">Confirm Password</label>
           <input
@@ -251,6 +270,7 @@ function Register() {
           />
         </div>
 
+        {/* SUBMIT */}
         <div className="login-actions">
           <button type="submit" className="login-btn">
             Sign Up
