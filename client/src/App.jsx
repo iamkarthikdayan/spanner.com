@@ -8,7 +8,10 @@ import Register from "./pages/Register.jsx";
 import AirConditionerRepair from './pages/AirConditionerRepair';
 import WashingMachineRepair from './pages/WashingMachineRepair.jsx';
 import ACMechanics from './pages/ACMechanics.jsx';
+import ProviderHome from './provider/ProviderHome.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 // Helper to conditionally render Navbar
+
 function Layout({ children }) {
   const location = useLocation();
   const hideNavbar = location.pathname === "/login" || location.pathname === "/register"; // Hide on login and register
@@ -32,6 +35,9 @@ function App() {
         <Route path="/ac-repair" element={<AirConditionerRepair />} />
         <Route path="/wm-repair" element={<WashingMachineRepair />} />
         <Route path="/ac-mechanics" element={<ACMechanics />} />
+        <Route path="/provider-home" element={<ProviderHome />} />
+
+        {/* Add more provider-specific routes as needed */}
 
       </Routes>
     </Layout>

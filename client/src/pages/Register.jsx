@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css";
-import Logo from "../assets/logo.png"; // Use your logo path
+import Logo from "../assets/logo.png";
 
 function Register() {
   const [form, setForm] = useState({
@@ -14,6 +14,7 @@ function Register() {
     location: "",
     license: null,
     documents: null,
+    specialization: [],
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +27,19 @@ function Register() {
     }));
   };
 
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    setForm((prev) => {
+      const updated = checked
+        ? [...prev.specialization, value]
+        : prev.specialization.filter((item) => item !== value);
+      return { ...prev, specialization: updated };
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (form.password !== form.confirm) {
       alert("Passwords do not match!");
       return;
@@ -37,9 +49,40 @@ function Register() {
       return;
     }
 
-    // If sending to backend later, convert to FormData here
-    alert(`Signup submitted as ${form.role}!`);
-    console.log("Submitted Form:", form);
+    // ✅ Separate users & providers storage
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const existingProviders = JSON.parse(localStorage.getItem("providers")) || [];
+
+    // ✅ Check duplicate email in both users & providers
+    const emailAlreadyExists =
+      existingUsers.some((u) => u.email === form.email) ||
+      existingProviders.some((p) => p.email === form.email);
+
+    if (emailAlreadyExists) {
+      alert("This email is already registered.");
+      return;
+    }
+
+    const userDataToStore = { ...form };
+    delete userDataToStore.confirm; // Don't store confirm password
+
+    if (form.role === "provider") {
+      // ✅ Save provider separately
+      localStorage.setItem(
+        "providers",
+        JSON.stringify([...existingProviders, userDataToStore])
+      );
+      alert("Provider account created successfully!");
+    } else {
+      // ✅ Save user separately
+      localStorage.setItem(
+        "users",
+        JSON.stringify([...existingUsers, userDataToStore])
+      );
+      alert("User account created successfully!");
+    }
+
+    console.log("Stored user/provider:", userDataToStore);
   };
 
   return (
@@ -55,6 +98,7 @@ function Register() {
         </div>
         <h2 className="login-title">Create your account</h2>
 
+        {/* ROLE SELECTION */}
         <div className="login-field">
           <label htmlFor="role">Register as</label>
           <select
@@ -71,6 +115,7 @@ function Register() {
           </select>
         </div>
 
+        {/* BASIC DETAILS */}
         <div className="login-field">
           <label htmlFor="name">Name</label>
           <input
@@ -110,11 +155,6 @@ function Register() {
                 placeholder="Your phone number"
               />
             </div>
-          </>
-        )}
-
-        {form.role === "provider" && (
-          <>
             <div className="login-field">
               <label htmlFor="location">Location</label>
               <input
@@ -127,6 +167,29 @@ function Register() {
                 placeholder="City or area"
               />
             </div>
+          </>
+        )}
+
+        {/* PROVIDER-SPECIFIC FIELDS */}
+        {form.role === "provider" && (
+          <>
+            <div className="login-field">
+              <label>Specialization</label>
+              <div className="checkbox-group">
+                {["Air Conditioner", "Refrigerator", "Washing Machine", "Fan", "Others"].map((item) => (
+                  <label key={item} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value={item}
+                      checked={form.specialization.includes(item)}
+                      onChange={handleCheckboxChange}
+                    />
+                    {item}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="login-field">
               <label htmlFor="license">License (Upload)</label>
               <input
@@ -151,6 +214,7 @@ function Register() {
           </>
         )}
 
+        {/* EMAIL */}
         <div className="login-field">
           <label htmlFor="email">Email</label>
           <input
@@ -165,6 +229,7 @@ function Register() {
           />
         </div>
 
+        {/* PASSWORD */}
         <div className="login-field">
           <label htmlFor="password">Password</label>
           <div className="login-password-wrap">
@@ -185,15 +250,12 @@ function Register() {
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              <i
-                className={`fa-solid fa-eye${
-                  showPassword ? "-slash" : ""
-                }`}
-              ></i>
+              <i className={`fa-solid fa-eye${showPassword ? "-slash" : ""}`} />
             </button>
           </div>
         </div>
 
+        {/* CONFIRM PASSWORD */}
         <div className="login-field">
           <label htmlFor="confirm">Confirm Password</label>
           <input
@@ -208,6 +270,7 @@ function Register() {
           />
         </div>
 
+        {/* SUBMIT */}
         <div className="login-actions">
           <button type="submit" className="login-btn">
             Sign Up
