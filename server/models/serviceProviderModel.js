@@ -66,6 +66,14 @@ const serviceProviderSchema = new Schema({
     type: Boolean,
     default: false
   },
+  number_of_reviews: {
+    type: Number,
+    default: 0
+},
+block_status: {
+    type: Boolean,
+    default: false
+  }
 },
   {
     timestamps:

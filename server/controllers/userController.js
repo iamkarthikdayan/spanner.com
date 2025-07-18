@@ -122,13 +122,80 @@ const userLogin = async (req, res) => {
   }
 }
 
+const providerLogin = async (req, res) => {
+  const { email, password } = req.body;
+  const backname = await ServiceProvider.findOne({ email })
 
+  const flag = await bcrypt.compare(password, backname.password)
+  if (flag) {
+    const token = jwt.sign({
+      userId: backname._id, username: backname.name, email: backname.email
+    },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    )
+    res.json({ message: 'User logined sucessfully', token })
+  }
+  else if (await ServiceProvider.find({ email })) {
+    res.send('Password incorrect')
+  }
+  else {
+    res.send('User not found')
+
+  }
+}
+
+const blockuser = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  user.block_status = true;
+  await user.save();
+  res.json({ message: 'User blocked successfully', user });
+};
+const unblockuser = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  user.block_status = false;
+  await user.save();
+  res.json({ message: 'User unblocked successfully', user });
+};
+const blockprovider = async (req, res) => {
+  const { id } = req.params;
+  const provider = await ServiceProvider.findById(id);
+  if (!provider) {
+    return res.status(404).json({ error: 'Service Provider not found' });
+  }
+  provider.block_status = true;
+  await provider.save();
+  res.json({ message: 'Service Provider blocked successfully', provider });
+};
+const unblockprovider = async (req, res) => {
+  const { id } = req.params;
+  const provider = await ServiceProvider.findById(id);
+  if (!provider) {
+    return res.status(404).json({ error: 'Service Provider not found' });
+  }
+  provider.block_status = false;
+  await provider.save();
+  res.json({ message: 'Service Provider unblocked successfully', provider });
+};
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   userLogin,
+  providerLogin,
   createProvider,
   updateProvider,
-  getAllProviders
+  getAllProviders,
+  blockuser,
+  unblockuser,
+  blockprovider,
+  unblockprovider
 };

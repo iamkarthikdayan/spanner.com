@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    service_type:{
+    service_type: {
         type: String,
         required: true
     },
@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['User', 'Admin'],
         default: 'User'
+    },
+    block_status: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
