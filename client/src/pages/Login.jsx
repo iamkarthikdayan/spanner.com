@@ -1,15 +1,24 @@
 import React, { useState } from "react";
 import "./Login.css";
 import Logo from "../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [form, setForm] = useState({ email: "", password: "", role: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -20,24 +29,26 @@ function Login() {
       return;
     }
 
-    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    // ✅ Choose correct storage (users OR providers)
+    const storageKey = form.role === "provider" ? "providers" : "users";
+    const storedAccounts = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-    const matchedUser = storedUsers.find(
-      (user) =>
-        user.email === form.email &&
-        user.password === form.password &&
-        user.role === form.role
+    const matched = storedAccounts.find(
+      (acc) => acc.email === form.email && acc.password === form.password
     );
 
-    if (matchedUser) {
-      // Save session data
-      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
-
+    if (matched) {
+      localStorage.setItem("loggedInUser", JSON.stringify(matched));
       alert(`Login successful as ${form.role}!`);
-      // Redirect to homepage (or dashboard)
-      navigate("/");
+
+      // ✅ Redirect based on role
+      if (form.role === "provider") {
+        navigate("/provider-home");
+      } else {
+        navigate("/");
+      }
     } else {
-      alert("Invalid credentials. Please check your email, password, and role.");
+      alert("Invalid credentials. Please try again.");
     }
   };
 
@@ -47,15 +58,16 @@ function Login() {
         <div className="login-logo">
           <img
             src={Logo}
-            alt="iFixit Logo"
+            alt="Spanner.com Logo"
             className="login-logo-img"
+            style={{ height: 60, width: "auto", marginBottom: 8 }}
           />
         </div>
+        <h2 className="login-title">Login to your account</h2>
 
-        <h2 className="login-title">Sign in to your account</h2>
-
+        {/* Role Selection */}
         <div className="login-field">
-          <label htmlFor="role">Sign in as</label>
+          <label htmlFor="role">Login as</label>
           <select
             id="role"
             name="role"
@@ -70,13 +82,13 @@ function Login() {
           </select>
         </div>
 
+        {/* Email Field */}
         <div className="login-field">
           <label htmlFor="email">Email</label>
           <input
             id="email"
             name="email"
             type="email"
-            autoComplete="username"
             required
             value={form.email}
             onChange={handleChange}
@@ -84,6 +96,7 @@ function Login() {
           />
         </div>
 
+        {/* Password Field */}
         <div className="login-field">
           <label htmlFor="password">Password</label>
           <div className="login-password-wrap">
@@ -91,11 +104,10 @@ function Login() {
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
               required
               value={form.password}
               onChange={handleChange}
-              placeholder="Your password"
+              placeholder="Enter your password"
             />
             <button
               type="button"
@@ -104,21 +116,21 @@ function Login() {
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              <i className={`fa-solid fa-eye${showPassword ? "-slash" : ""}`}></i>
+              <i className={`fa-solid fa-eye${showPassword ? "-slash" : ""}`} />
             </button>
           </div>
         </div>
 
+        {/* Submit Button */}
         <div className="login-actions">
           <button type="submit" className="login-btn">
-            Sign In
+            Login
           </button>
         </div>
 
+        {/* Links */}
         <div className="login-links">
-          <Link to="#">Forgot password?</Link>
-          <span>·</span>
-          <Link to="/register">Create account</Link>
+          <a href="/register">Don't have an account? Sign up</a>
         </div>
       </form>
     </div>
