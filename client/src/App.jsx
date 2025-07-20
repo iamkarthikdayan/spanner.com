@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/CustomNavbar.jsx'
+import Footer from './components/Footer.jsx'
+import Home from './pages/Home.jsx';
+import Login from "./pages/Login";
+import Register from "./pages/Register.jsx";
+import AirConditionerRepair from './pages/AirConditionerRepair';
+import WashingMachineRepair from './pages/WashingMachineRepair.jsx';
+import ACMechanics from './pages/ACMechanics.jsx';
+import ProviderHome from './provider/ProviderHome.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import AdminDashboard from './admin/AdminDashboard.jsx';
+// Helper to conditionally render Navbar
 
-function App() {
-  const [count, setCount] = useState(0)
-
+function Layout({ children }) {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/admin"; // Hide on login and register
+  const hideFooter = location.pathname === "/admin";
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {!hideNavbar && <Navbar />}
+      {children}
+      {!hideFooter && <Footer />}
     </>
-  )
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        {/* Add other routes here */}
+        <Route path="/ac-repair" element={<AirConditionerRepair />} />
+        <Route path="/wm-repair" element={<WashingMachineRepair />} />
+        <Route path="/ac-mechanics" element={<ACMechanics />} />
+        <Route path="/provider-home" element={<ProviderHome />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* Add more provider-specific routes as needed */}
+
+      </Routes>
+    </Layout>
+  );
+}
+
+export default App;
