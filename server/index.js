@@ -18,7 +18,8 @@ app.use(express.json())
 const productrouter = require('./routes/productRouter')
 app.use('/product', productrouter)
 
-
+const reviewRouter = require('./routes/reviewRoutes')
+app.use('/review', reviewRouter)
 const userrouter = require('./routes/userRouter')
 app.use('/user', userrouter)
 
