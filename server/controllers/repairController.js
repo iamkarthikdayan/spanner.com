@@ -27,13 +27,13 @@ const createRequest = async (req, res) => {
 const trackRequest = async (req, res)=>{
   try {
     const repair = await Repair.findById(req.params.user_id);
-    if (!repair) return res.status(404).json({ error: 'Request not found' });
+    if (!repair||repair.status=="finished") return res.status(404).json({ error: 'Request not found' });
     res.json(repair);
   } catch (err) {
     res.status(500).json({ error: 'Failed to track request' });
   }
   };
-const getAllRequests = async (req, res) => {
+const getAllRequestsprovider = async (req, res) => {
   try {
     const requests = await Repair.find(req.params.provider_id ? { provider_id: req.params.provider_id } : {});
     res.json(requests);
@@ -41,8 +41,33 @@ const getAllRequests = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve requests' });
   }
 };
+const getAllRequestsuser = async (req, res) => {
+  try {
+    const requests = await Repair.find({ userId: req.params.user_id });
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to retrieve requests' });
+  }
+}
+const repairstatuschange = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const repair = await Repair.findById(id);
+    if (!repair) {
+      return res.status(404).json({ error: 'Repair request not found' });
+    }
+    repair.status = status;
+    await repair.save();
+    res.json({ message: 'Repair request status updated successfully', repair });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update repair request status' });
+  }
+}
 module.exports = {
   createRequest,
   trackRequest,
-  getAllRequests
+  getAllRequestsprovider,
+  getAllRequestsuser,
+  repairstatuschange
 };
