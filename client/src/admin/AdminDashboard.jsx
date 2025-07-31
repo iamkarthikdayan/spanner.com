@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 import Logo from "../assets/logo.png";
 
@@ -7,6 +8,7 @@ function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [providers, setProviders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
@@ -15,7 +17,13 @@ function AdminDashboard() {
     setProviders(storedProviders);
   }, []);
 
-  // ✅ Filter members based on search
+  const handleLogout = () => {
+    // ✅ Clear logged-in user and navigate to home
+    localStorage.removeItem("loggedInUser");
+    alert("Signed out successfully!");
+    navigate("/");
+  };
+
   const filterMembers = (list) =>
     list.filter(
       (m) =>
@@ -23,7 +31,6 @@ function AdminDashboard() {
         m.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-  // ✅ Remove member
   const handleRemove = (type, email) => {
     if (!window.confirm(`Remove ${email}?`)) return;
 
@@ -38,18 +45,15 @@ function AdminDashboard() {
     }
   };
 
-  // ✅ Block member
   const handleBlock = (type, email) => {
     alert(`${type === "user" ? "User" : "Provider"} ${email} is blocked!`);
   };
 
-  // ✅ Card Component
   const MemberCard = ({ data, type }) => {
     const [showMore, setShowMore] = useState(false);
 
     return (
       <div className="admin-card">
-        {/* Basic Info */}
         <div className="admin-card-header">
           <div>
             <h4>{data.name}</h4>
@@ -63,7 +67,6 @@ function AdminDashboard() {
           </button>
         </div>
 
-        {/* Extra Details */}
         {showMore && (
           <div className="admin-card-details">
             {data.phoneno && <p><strong>Phone:</strong> {data.phoneno}</p>}
@@ -74,7 +77,6 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="admin-card-actions">
           <button className="remove-btn" onClick={() => handleRemove(type, data.email)}>Remove</button>
           <button className="block-btn" onClick={() => handleBlock(type, data.email)}>Block</button>
@@ -110,6 +112,26 @@ function AdminDashboard() {
             🔧 Providers
           </button>
         </nav>
+
+        {/* ✅ SIGN OUT BUTTON */}
+        <div style={{ marginTop: "auto", paddingTop: "1rem" }}>
+          <button
+            style={{
+              width: "100%",
+              background: "#ff4d4d",
+              color: "#fff",
+              padding: "0.8rem",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "600",
+              marginTop: "1rem"
+            }}
+            onClick={handleLogout}
+          >
+            🚪 Sign Out
+          </button>
+        </div>
       </aside>
 
       {/* ✅ MAIN CONTENT */}
@@ -134,7 +156,6 @@ function AdminDashboard() {
           </section>
         )}
 
-        {/* ✅ USERS SECTION */}
         {activeSection === "users" && (
           <section className="content-section">
             <h1>👤 Registered Users</h1>
@@ -158,7 +179,6 @@ function AdminDashboard() {
           </section>
         )}
 
-        {/* ✅ PROVIDERS SECTION */}
         {activeSection === "providers" && (
           <section className="content-section">
             <h1>🔧 Registered Providers</h1>

@@ -4,24 +4,16 @@ import Logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    role: "",
-  });
-
+  const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.role) {
@@ -29,43 +21,32 @@ function Login() {
       return;
     }
 
-    // ✅ ADMIN LOGIN CHECK
-    if (
-      form.email === "admin123@gmail.com" &&
-      form.password === "0987" &&
-      form.role === "admin"
-    ) {
-      const adminUser = {
-        email: form.email,
-        role: "admin",
-        name: "Super Admin",
-      };
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-      localStorage.setItem("loggedInUser", JSON.stringify(adminUser));
-      alert("✅ Admin login successful!");
-      navigate("/admin");
-      return;
-    }
+      const data = await response.json();
 
-    // ✅ Normal User / Provider login
-    const storageKey = form.role === "provider" ? "providers" : "users";
-    const storedAccounts = JSON.parse(localStorage.getItem(storageKey)) || [];
-
-    const matched = storedAccounts.find(
-      (acc) => acc.email === form.email && acc.password === form.password
-    );
-
-    if (matched) {
-      localStorage.setItem("loggedInUser", JSON.stringify(matched));
-      alert(`✅ Login successful as ${form.role}!`);
-
-      if (form.role === "provider") {
-        navigate("/provider-home");
-      } else {
-        navigate("/");
+      if (!data.success) {
+        alert("❌ Invalid credentials");
+        return;
       }
-    } else {
-      alert("❌ Invalid credentials. Please try again.");
+
+      // ✅ Save logged-in user
+      localStorage.setItem("loggedInUser", JSON.stringify(data.user));
+
+      alert(`✅ Login successful as ${data.user.role}!`);
+
+      // ✅ Redirect based on role
+      if (data.user.role === "admin") navigate("/admin");
+      else if (data.user.role === "provider") navigate("/provider-home");
+      else navigate("/");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again.");
     }
   };
 
@@ -91,7 +72,7 @@ function Login() {
             <option value="">Select...</option>
             <option value="user">User</option>
             <option value="provider">Provider</option>
-            <option value="admin">Admin</option> {/* ✅ Added Admin */}
+            <option value="admin">Admin</option>
           </select>
         </div>
 
@@ -134,9 +115,7 @@ function Login() {
 
         {/* Submit */}
         <div className="login-actions">
-          <button type="submit" className="login-btn">
-            Login
-          </button>
+          <button type="submit" className="login-btn">Login</button>
         </div>
 
         <div className="login-links">
